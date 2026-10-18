@@ -1,16 +1,25 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   getCurrentTelemetry,
   getTelemetryHistory,
   getCoveragePoints,
   checkBackendHealth,
 } from './services/api';
+import Navbar from './components/Navbar';
+import MainDashboardView from './components/MainDashboardView';
 import NetworkOverview from './components/dashboard/NetworkOverview';
+import NetworkScanner from './components/NetworkScanner';
+import SignalMonitor from './components/SignalMonitor';
+import NetworkModeSelector from './components/NetworkModeSelector';
+import SpeedTestView from './components/SpeedTestView';
 import CoverageMap from './components/CoverageMap';
 import TelemetryHistory from './components/TelemetryHistory';
+import OfflineModeView from './components/OfflineModeView';
+import SettingsAboutView from './components/SettingsAboutView';
 import './App.css';
 
 function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [telemetry, setTelemetry] = useState(null);
   const [historyData, setHistoryData] = useState([]);
   const [coverageData, setCoverageData] = useState(null);
@@ -23,6 +32,10 @@ function App() {
   const [coverageError, setCoverageError] = useState(null);
 
   const [backendHealth, setBackendHealth] = useState({ checked: false, connected: false });
+  const [isOfflineSimulated, setIsOfflineSimulated] = useState(false);
+  const [pollingInterval, setPollingInterval] = useState(5000); // 5 seconds default
+
+  const isInitialMount = useRef(true);
 
   // Fetch telemetry history
   const fetchHistory = useCallback(async () => {
@@ -48,11 +61,15 @@ function App() {
     }
   }, []);
 
-  // Fetch current telemetry from backend
+  // Fetch current telemetry
   const fetchTelemetry = useCallback(async (isInitial = false) => {
-    if (isInitial) {
-      setLoading(true);
-    } else {
+    if (isOfflineSimulated) {
+      // In offline simulation mode, preserve last telemetry state
+      setRefreshing(false);
+      return;
+    }
+
+    if (!isInitial) {
       setRefreshing(true);
     }
     setTelemetryError(null);
@@ -60,30 +77,46 @@ function App() {
     try {
       const data = await getCurrentTelemetry();
       setTelemetry(data);
-      setBackendHealth({ checked: true, connected: true });
-      // When refreshed, also update history buffer
+      if (!data.isOfflineFallback) {
+        setBackendHealth({ checked: true, connected: true });
+      } else {
+        setBackendHealth({ checked: true, connected: false });
+      }
+      // Update history buffer
       fetchHistory();
     } catch (err) {
-      console.error('Failed to fetch telemetry:', err);
+      console.warn('Telemetry fetch warning:', err);
       setTelemetryError(err.message || 'Unable to retrieve network telemetry.');
       setBackendHealth({ checked: true, connected: false });
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [fetchHistory]);
+  }, [fetchHistory, isOfflineSimulated]);
 
   // Initial load
   useEffect(() => {
-    // Quick backend sanity check
-    checkBackendHealth()
-      .then(() => setBackendHealth({ checked: true, connected: true }))
-      .catch(() => setBackendHealth({ checked: true, connected: false }));
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      checkBackendHealth()
+        .then((res) => setBackendHealth({ checked: true, connected: !!res.success }))
+        .catch(() => setBackendHealth({ checked: true, connected: false }));
 
-    // Fetch initial datasets concurrently
-    fetchTelemetry(true);
-    fetchCoverage();
+      fetchTelemetry(true);
+      fetchCoverage();
+    }
   }, [fetchTelemetry, fetchCoverage]);
+
+  // Automated polling effect
+  useEffect(() => {
+    if (pollingInterval <= 0 || isOfflineSimulated) return;
+
+    const timer = setInterval(() => {
+      fetchTelemetry(false);
+    }, pollingInterval);
+
+    return () => clearInterval(timer);
+  }, [pollingInterval, isOfflineSimulated, fetchTelemetry]);
 
   return (
     <div className="app-container">
@@ -112,10 +145,12 @@ function App() {
           <div className="header-title-group">
             <div className="header-top-row">
               <h1 className="header-app-title">NETWORK COMPASS</h1>
-              <span className="simulation-pill">SIMULATION</span>
+              <span className="simulation-pill">
+                {isOfflineSimulated ? 'OFFLINE SIM' : telemetry?.networkType ? `${telemetry.networkType} SIM` : 'SIMULATION'}
+              </span>
             </div>
             <p className="header-app-subtitle">
-              Network Connectivity Monitoring &amp; Visualization
+              Cellular RF Telemetry, Propagation Intelligence &amp; Link Benchmarking
             </p>
           </div>
         </div>
@@ -123,14 +158,25 @@ function App() {
         {/* Monitoring Service Connectivity Status */}
         <div className="header-status-pill">
           <span
-            className={`status-pill-dot ${backendHealth.connected ? 'connected' : 'disconnected'}`}
+            className={`status-pill-dot ${isOfflineSimulated ? 'disconnected' : backendHealth.connected ? 'connected' : 'disconnected'}`}
             aria-hidden="true"
           />
           <span className="status-pill-label">
-            {backendHealth.connected ? 'Monitoring Active' : 'Service Disconnected'}
+            {isOfflineSimulated
+              ? 'Offline Mode Active'
+              : backendHealth.connected
+              ? 'Backend API Connected'
+              : 'Offline Demo Cache'}
           </span>
         </div>
       </header>
+
+      {/* Navigation Bar */}
+      <Navbar
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        isOfflineSimulated={isOfflineSimulated}
+      />
 
       {/* Main Content Area */}
       <main className="dashboard-main">
@@ -142,41 +188,88 @@ function App() {
           </div>
         ) : (
           <div className="dashboard-content-stack">
-            {/* 1. Existing Network Overview */}
-            <NetworkOverview
-              telemetry={telemetry}
-              loading={refreshing}
-              error={telemetryError}
-              onRefresh={() => fetchTelemetry(false)}
-            />
-
-            {/* 2. Coverage Intelligence & Heatmap */}
-            <section className="dashboard-section" aria-labelledby="coverage-section-heading">
-              <div className="section-header">
-                <h2 id="coverage-section-heading" className="section-title">Coverage Intelligence</h2>
-                <span className="section-subtitle">Geographic RF distribution &amp; signal propagation density</span>
-              </div>
-              <CoverageMap
-                coverageData={coverageData}
-                loading={loading}
-                error={coverageError}
-                onRetry={fetchCoverage}
-              />
-            </section>
-
-            {/* 3. Telemetry Performance History */}
-            <section className="dashboard-section" aria-labelledby="history-section-heading">
-              <div className="section-header">
-                <h2 id="history-section-heading" className="section-title">Network History</h2>
-                <span className="section-subtitle">Longitudinal telemetry performance and link stability</span>
-              </div>
-              <TelemetryHistory
+            {/* 1. Dashboard View */}
+            {activeTab === 'dashboard' && (
+              <MainDashboardView
+                telemetry={telemetry}
                 historyData={historyData}
-                loading={loading}
-                error={historyError}
-                onRetry={fetchHistory}
+                loading={refreshing}
+                error={telemetryError}
+                onRefresh={() => fetchTelemetry(false)}
+                onNavigate={setActiveTab}
               />
-            </section>
+            )}
+
+            {/* 2. Network Overview */}
+            {activeTab === 'overview' && (
+              <NetworkOverview
+                telemetry={telemetry}
+                loading={refreshing}
+                error={telemetryError}
+                onRefresh={() => fetchTelemetry(false)}
+              />
+            )}
+
+            {/* 3. Network Scanner */}
+            {activeTab === 'scanner' && <NetworkScanner />}
+
+            {/* 4. Signal Monitoring */}
+            {activeTab === 'signal' && <SignalMonitor telemetry={telemetry} />}
+
+            {/* 5. 4G/5G Network Mode */}
+            {activeTab === 'mode' && (
+              <NetworkModeSelector
+                currentTelemetry={telemetry}
+                onProfileChanged={(updated) => setTelemetry(updated)}
+              />
+            )}
+
+            {/* 6. Speed & Latency */}
+            {activeTab === 'speedtest' && (
+              <SpeedTestView currentTelemetry={telemetry} />
+            )}
+
+            {/* 7. Heat Map */}
+            {activeTab === 'heatmap' && (
+              <section className="dashboard-section" aria-labelledby="coverage-heading">
+                <CoverageMap
+                  coverageData={coverageData}
+                  loading={loading}
+                  error={coverageError}
+                  onRetry={fetchCoverage}
+                />
+              </section>
+            )}
+
+            {/* 8. History & Analytics */}
+            {activeTab === 'history' && (
+              <section className="dashboard-section" aria-labelledby="history-heading">
+                <TelemetryHistory
+                  historyData={historyData}
+                  loading={loading}
+                  error={historyError}
+                  onRetry={fetchHistory}
+                />
+              </section>
+            )}
+
+            {/* 9. Offline Mode */}
+            {activeTab === 'offline' && (
+              <OfflineModeView
+                isOfflineSimulated={isOfflineSimulated}
+                onToggleOffline={() => setIsOfflineSimulated(!isOfflineSimulated)}
+                currentTelemetry={telemetry}
+              />
+            )}
+
+            {/* 10. Settings & About */}
+            {activeTab === 'settings' && (
+              <SettingsAboutView
+                pollingInterval={pollingInterval}
+                onUpdatePollingInterval={setPollingInterval}
+                backendConnected={backendHealth.connected}
+              />
+            )}
           </div>
         )}
       </main>
@@ -184,7 +277,7 @@ function App() {
       {/* Footer */}
       <footer className="dashboard-footer">
         <p>
-          Network Compass • Telemetry Monitoring System • ECE Department
+          Network Compass • ECE Hackathon Telemetry System • React 19 + Node.js Express
         </p>
       </footer>
     </div>

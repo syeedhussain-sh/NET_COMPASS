@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "node backend/src/server.js",
+    "dev:server": "node --watch backend/src/server.js",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"

@@ -4,17 +4,115 @@
  * NOTE: This is prototype demo data for ECE network visualization, not real hardware measurements.
  */
 
-// Internal simulation state for realistic dynamic drift
-let currentProfile = {
-  networkType: '5G',
-  technology: '5G Sub-6',
-  baseSignal: -76, // dBm
-  baseDownload: 235.0, // Mbps
-  baseUpload: 48.5, // Mbps
-  baseLatency: 22, // ms
-  baseJitter: 3.5, // ms
-  basePacketLoss: 0.1, // %
+export const PROFILES = {
+  '5g-mmwave': {
+    id: '5g-mmwave',
+    name: '5G mmWave (FR2)',
+    networkType: '5G',
+    technology: '5G mmWave',
+    band: 'n258 (26 GHz)',
+    frequency: '26000 MHz',
+    channelBandwidth: '400 MHz',
+    baseSignal: -69, // dBm
+    baseDownload: 640.0, // Mbps
+    baseUpload: 92.0, // Mbps
+    baseLatency: 12, // ms
+    baseJitter: 1.8, // ms
+    basePacketLoss: 0.04, // %
+    baseSinr: 24, // dB
+    baseRsrq: -7, // dB
+    cqi: 14,
+  },
+  '5g-sub6': {
+    id: '5g-sub6',
+    name: '5G Sub-6 GHz (FR1)',
+    networkType: '5G',
+    technology: '5G Sub-6',
+    band: 'n78 (3.5 GHz)',
+    frequency: '3500 MHz',
+    channelBandwidth: '100 MHz',
+    baseSignal: -76, // dBm
+    baseDownload: 255.0, // Mbps
+    baseUpload: 48.0, // Mbps
+    baseLatency: 21, // ms
+    baseJitter: 3.2, // ms
+    basePacketLoss: 0.1, // %
+    baseSinr: 18, // dB
+    baseRsrq: -10, // dB
+    cqi: 12,
+  },
+  '4g-lte-a': {
+    id: '4g-lte-a',
+    name: '4G LTE-Advanced (CA)',
+    networkType: '4G',
+    technology: 'LTE-A',
+    band: 'Band 3 + Band 40',
+    frequency: '1800/2300 MHz',
+    channelBandwidth: '40 MHz (2x20 CA)',
+    baseSignal: -86, // dBm
+    baseDownload: 88.0, // Mbps
+    baseUpload: 28.0, // Mbps
+    baseLatency: 35, // ms
+    baseJitter: 5.4, // ms
+    basePacketLoss: 0.25, // %
+    baseSinr: 14, // dB
+    baseRsrq: -12, // dB
+    cqi: 9,
+  },
+  '4g-lte': {
+    id: '4g-lte',
+    name: '4G LTE Standard',
+    networkType: '4G',
+    technology: 'LTE',
+    band: 'Band 3 (1800 MHz)',
+    frequency: '1800 MHz',
+    channelBandwidth: '20 MHz',
+    baseSignal: -98, // dBm
+    baseDownload: 36.0, // Mbps
+    baseUpload: 11.5, // Mbps
+    baseLatency: 49, // ms
+    baseJitter: 8.5, // ms
+    basePacketLoss: 0.6, // %
+    baseSinr: 8, // dB
+    baseRsrq: -15, // dB
+    cqi: 6,
+  },
 };
+
+// Active simulation profile
+let activeProfileId = '5g-sub6';
+let isAutoDrift = false;
+
+export const getAvailableProfiles = () => {
+  return Object.values(PROFILES).map((p) => ({
+    id: p.id,
+    name: p.name,
+    networkType: p.networkType,
+    technology: p.technology,
+    band: p.band,
+    frequency: p.frequency,
+    channelBandwidth: p.channelBandwidth,
+    baseSignal: p.baseSignal,
+    baseDownload: p.baseDownload,
+    baseLatency: p.baseLatency,
+    isActive: p.id === activeProfileId,
+  }));
+};
+
+export const setProfile = (profileId) => {
+  if (profileId === 'auto') {
+    isAutoDrift = true;
+    return { success: true, message: 'Auto dynamic drift enabled', activeProfileId };
+  }
+  if (!PROFILES[profileId]) {
+    throw new Error(`Profile '${profileId}' not found. Available: ${Object.keys(PROFILES).join(', ')}`);
+  }
+  isAutoDrift = false;
+  activeProfileId = profileId;
+  return { success: true, message: `Switched profile to ${PROFILES[profileId].name}`, profile: PROFILES[profileId] };
+};
+
+export const getActiveProfile = () => PROFILES[activeProfileId];
 
 /**
  * Derives signal bar count (1-5) from RSRP/RSSI dBm value.
@@ -38,16 +136,10 @@ export const calculateSignalBars = (dbm) => {
  */
 export const calculateNetworkQuality = (signalStrength, latency, packetLoss) => {
   let score = 100;
-
-  // Signal penalty: optimal is -65 dBm, floor is -120 dBm
   const signalPenalty = Math.max(0, (-signalStrength - 65) * 1.2);
   score -= signalPenalty;
-
-  // Latency penalty: optimal is < 20 ms
   const latencyPenalty = Math.max(0, (latency - 20) * 0.8);
   score -= latencyPenalty;
-
-  // Packet loss penalty
   score -= packetLoss * 25;
 
   if (score >= 80) return 'Excellent';
@@ -66,109 +158,76 @@ export const calculateConnectionStatus = (signalStrength, packetLoss) => {
   return 'Connected';
 };
 
-/**
- * Helper to clamp values
- */
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
 /**
  * Generates a realistic telemetry snapshot with correlated network metrics.
- * Simulates small dynamic fluctuations on each request.
  */
 export const getTelemetrySnapshot = () => {
-  // Occasionally switch profiles to demonstrate 4G / 5G variation (15% chance)
-  if (Math.random() < 0.15) {
-    const profiles = [
-      {
-        networkType: '5G',
-        technology: '5G Sub-6',
-        baseSignal: -74,
-        baseDownload: 245.0,
-        baseUpload: 45.0,
-        baseLatency: 21,
-        baseJitter: 3.0,
-        basePacketLoss: 0.1,
-      },
-      {
-        networkType: '5G',
-        technology: '5G mmWave',
-        baseSignal: -69,
-        baseDownload: 620.0,
-        baseUpload: 88.0,
-        baseLatency: 12,
-        baseJitter: 1.8,
-        basePacketLoss: 0.05,
-      },
-      {
-        networkType: '4G',
-        technology: 'LTE-A',
-        baseSignal: -86,
-        baseDownload: 82.0,
-        baseUpload: 26.0,
-        baseLatency: 34,
-        baseJitter: 5.5,
-        basePacketLoss: 0.3,
-      },
-      {
-        networkType: '4G',
-        technology: 'LTE',
-        baseSignal: -98,
-        baseDownload: 38.0,
-        baseUpload: 12.0,
-        baseLatency: 48,
-        baseJitter: 8.2,
-        basePacketLoss: 0.6,
-      },
-    ];
-    currentProfile = profiles[Math.floor(Math.random() * profiles.length)];
+  if (isAutoDrift && Math.random() < 0.15) {
+    const keys = Object.keys(PROFILES);
+    activeProfileId = keys[Math.floor(Math.random() * keys.length)];
   }
 
-  // Generate bounded natural noise/drift around the active profile
-  const signalJitter = (Math.random() * 4 - 2); // +/- 2 dBm
-  const signalStrength = Math.round(clamp(currentProfile.baseSignal + signalJitter, -120, -65));
+  const profile = PROFILES[activeProfileId] || PROFILES['5g-sub6'];
 
-  // Signal ratio (0 = -120dBm, 1 = -65dBm) to correlate throughput
-  const signalRatio = (signalStrength + 120) / 55; // 0.0 to 1.0
+  // Signal noise +/- 2.5 dBm
+  const signalJitter = (Math.random() * 5 - 2.5);
+  const signalStrength = Math.round(clamp(profile.baseSignal + signalJitter, -120, -60));
 
-  // Throughput correlates with signal ratio + small random fluctuation
-  const downloadFluctuation = (Math.random() * 0.1 - 0.05); // +/- 5%
+  // Signal ratio (0 = -120 dBm, 1 = -60 dBm)
+  const signalRatio = (signalStrength + 120) / 60;
+
+  // Correlated throughput
+  const dlNoise = (Math.random() * 0.1 - 0.05);
   const downloadSpeed = parseFloat(
-    clamp(currentProfile.baseDownload * (0.8 + 0.35 * signalRatio) * (1 + downloadFluctuation), 5, 980).toFixed(1)
+    clamp(profile.baseDownload * (0.8 + 0.35 * signalRatio) * (1 + dlNoise), 5, 1200).toFixed(1)
   );
 
-  const uploadFluctuation = (Math.random() * 0.1 - 0.05);
+  const ulNoise = (Math.random() * 0.1 - 0.05);
   const uploadSpeed = parseFloat(
-    clamp(currentProfile.baseUpload * (0.8 + 0.35 * signalRatio) * (1 + uploadFluctuation), 1, 150).toFixed(1)
+    clamp(profile.baseUpload * (0.8 + 0.35 * signalRatio) * (1 + ulNoise), 1, 200).toFixed(1)
   );
 
-  // Latency inverse correlation with signal
-  const latencyDrift = (Math.random() * 4 - 2) + (1 - signalRatio) * 10;
-  const latency = Math.round(clamp(currentProfile.baseLatency + latencyDrift, 8, 160));
+  // Correlated latency
+  const latNoise = (Math.random() * 4 - 2) + (1 - signalRatio) * 8;
+  const latency = Math.round(clamp(profile.baseLatency + latNoise, 7, 180));
 
   // Jitter
-  const jitterDrift = (Math.random() * 1.5 - 0.75);
-  const jitter = parseFloat(clamp(currentProfile.baseJitter + jitterDrift, 1.0, 25.0).toFixed(1));
+  const jitNoise = (Math.random() * 1.5 - 0.75);
+  const jitter = parseFloat(clamp(profile.baseJitter + jitNoise, 0.8, 30.0).toFixed(1));
 
   // Packet Loss
-  const packetLossDrift = (1 - signalRatio) * 0.4 + (Math.random() * 0.1);
-  const packetLoss = parseFloat(clamp(currentProfile.basePacketLoss + packetLossDrift, 0.0, 5.0).toFixed(1));
+  const plNoise = (1 - signalRatio) * 0.35 + (Math.random() * 0.08);
+  const packetLoss = parseFloat(clamp(profile.basePacketLoss + plNoise, 0.0, 5.0).toFixed(2));
 
-  // Derive status, bars, and quality
+  // ECE RF Parameters
+  const sinr = parseFloat((profile.baseSinr + (Math.random() * 3 - 1.5)).toFixed(1));
+  const rsrq = parseFloat((profile.baseRsrq + (Math.random() * 2 - 1.0)).toFixed(1));
+
   const signalBars = calculateSignalBars(signalStrength);
   const quality = calculateNetworkQuality(signalStrength, latency, packetLoss);
   const connectionStatus = calculateConnectionStatus(signalStrength, packetLoss);
 
   return {
     connectionStatus,
-    networkType: currentProfile.networkType,
-    technology: currentProfile.technology,
-    signalStrength,
+    networkType: profile.networkType,
+    technology: profile.technology,
+    band: profile.band,
+    frequency: profile.frequency,
+    channelBandwidth: profile.channelBandwidth,
+    activeProfileId,
+    profileName: profile.name,
+    signalStrength, // RSRP in dBm
     signalBars,
     downloadSpeed,
     uploadSpeed,
     latency,
     jitter,
     packetLoss,
+    sinr,
+    rsrq,
+    cqi: profile.cqi,
     quality,
     timestamp: new Date().toISOString(),
     isSimulated: true,

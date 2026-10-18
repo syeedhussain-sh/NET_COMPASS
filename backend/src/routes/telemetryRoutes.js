@@ -1,5 +1,10 @@
 import { Router } from 'express';
-import { getCurrentTelemetry, getTelemetryHistory } from '../controllers/telemetryController.js';
+import {
+  getCurrentTelemetry,
+  getTelemetryHistory,
+  getProfiles,
+  setTelemetryProfile,
+} from '../controllers/telemetryController.js';
 
 const router = Router();
 
@@ -8,5 +13,11 @@ router.get('/current', getCurrentTelemetry);
 
 // GET /api/telemetry/history
 router.get('/history', getTelemetryHistory);
+
+// GET /api/telemetry/profiles
+router.get('/profiles', getProfiles);
+
+// POST /api/telemetry/profile
+router.post('/profile', setTelemetryProfile);
 
 export default router;
