@@ -19,7 +19,35 @@ import SettingsAboutView from './components/SettingsAboutView';
 import './App.css';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const getInitialTab = () => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash.replace('#', '');
+      const validTabs = ['dashboard', 'overview', 'scanner', 'signal', 'mode', 'speedtest', 'heatmap', 'history', 'offline', 'settings'];
+      if (validTabs.includes(hash)) return hash;
+    }
+    return 'dashboard';
+  };
+
+  const [activeTab, setActiveTabState] = useState(getInitialTab);
+
+  const setActiveTab = (tab) => {
+    setActiveTabState(tab);
+    if (typeof window !== 'undefined') {
+      window.location.hash = tab;
+    }
+  };
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      const validTabs = ['dashboard', 'overview', 'scanner', 'signal', 'mode', 'speedtest', 'heatmap', 'history', 'offline', 'settings'];
+      if (validTabs.includes(hash)) {
+        setActiveTabState(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
   const [telemetry, setTelemetry] = useState(null);
   const [historyData, setHistoryData] = useState([]);
   const [coverageData, setCoverageData] = useState(null);

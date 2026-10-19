@@ -207,3 +207,44 @@ export const mockFallbackScan = {
     },
   ],
 };
+
+export const getMockCoveragePoints = () => {
+  const points = [];
+  const transmitterNodes = [
+    { latOffset: 0.0, lngOffset: 0.0, type: '5G mmWave', primaryGen: '5G', baseSignal: -68 },
+    { latOffset: 0.008, lngOffset: -0.007, type: '5G Sub-6', primaryGen: '5G', baseSignal: -74 },
+    { latOffset: -0.007, lngOffset: 0.009, type: '5G Sub-6', primaryGen: '5G', baseSignal: -76 },
+    { latOffset: 0.012, lngOffset: 0.011, type: 'LTE-A', primaryGen: '4G', baseSignal: -86 },
+    { latOffset: -0.011, lngOffset: -0.012, type: 'LTE', primaryGen: '4G', baseSignal: -94 },
+  ];
+
+  for (let i = 0; i < 80; i++) {
+    const cluster = transmitterNodes[i % transmitterNodes.length];
+    const dLat = cluster.latOffset + ((Math.sin(i * 1.7) + Math.cos(i * 0.9)) * 0.003);
+    const dLng = cluster.lngOffset + ((Math.cos(i * 1.3) + Math.sin(i * 0.5)) * 0.004);
+    const signalStrength = Math.round(Math.max(-118, Math.min(-62, cluster.baseSignal - (Math.abs(dLat) + Math.abs(dLng)) * 500)));
+    const is5G = cluster.primaryGen === '5G';
+    const downloadSpeed = is5G ? parseFloat((260 + (Math.sin(i) * 20)).toFixed(1)) : 65.0;
+
+    points.push({
+      id: `pt-${i + 1}`,
+      latitude: parseFloat((37.7749 + dLat).toFixed(6)),
+      longitude: parseFloat((-122.4194 + dLng).toFixed(6)),
+      signalStrength,
+      signalBars: signalStrength >= -80 ? 5 : signalStrength >= -90 ? 4 : signalStrength >= -100 ? 3 : 2,
+      networkType: cluster.primaryGen,
+      technology: cluster.type,
+      downloadSpeed,
+      uploadSpeed: is5G ? 48.0 : 16.5,
+      latency: is5G ? 21 : 38,
+      jitter: 2.8,
+      packetLoss: 0.1,
+      quality: signalStrength >= -80 ? 'Excellent' : signalStrength >= -90 ? 'Good' : signalStrength >= -100 ? 'Fair' : 'Poor',
+    });
+  }
+
+  return {
+    center: { latitude: 37.7749, longitude: -122.4194, name: 'Innovation Tech Corridor' },
+    points,
+  };
+};

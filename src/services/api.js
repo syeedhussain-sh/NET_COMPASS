@@ -10,6 +10,7 @@ import {
   getMockHistory,
   mockFallbackProfiles,
   mockFallbackScan,
+  getMockCoveragePoints,
 } from './mockFallback';
 
 // Primary endpoint uses relative /api (proxied by Vite) or fallback to localhost:5000/api
@@ -150,11 +151,8 @@ export const getCoveragePoints = async () => {
     throw new Error('Invalid coverage payload');
   } catch (error) {
     console.warn('Backend coverage unavailable, using fallback dataset:', error.message);
-    // Return standard campus coordinate dataset
-    return {
-      center: { latitude: 37.7749, longitude: -122.4194, name: 'Innovation Tech Corridor' },
-      points: [],
-    };
+    // Return standard campus coordinate dataset with RF propagation points
+    return getMockCoveragePoints();
   }
 };
 

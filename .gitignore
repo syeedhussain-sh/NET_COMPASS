@@ -26,5 +26,8 @@ dist-ssr
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 *.sw?
+
+# Local backups and archive directories
+archive_generated_views/
+backup_pre_recovery/

@@ -1,204 +1,269 @@
 # Network Compass 🧭
 
-**Network Compass** is a full-stack cellular radio frequency (RF) telemetry monitoring, propagation intelligence, and link benchmarking dashboard designed for an Electronics and Communication Engineering (ECE) hackathon demonstration.
+> **Cellular RF Telemetry, Propagation Intelligence & Link Benchmarking System**
 
-The system models cellular physical and link-layer behavior—including Reference Signal Received Power (**RSRP**), Reference Signal Received Quality (**RSRQ**), Signal-to-Interference-plus-Noise Ratio (**SINR**), Channel Quality Indicator (**CQI**), and Carrier Aggregation across **4G LTE** and **5G NR** spectrum bands.
+[![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-4.21-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![Leaflet](https://img.shields.io/badge/Leaflet-1.9-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com/)
+[![Recharts](https://img.shields.io/badge/Recharts-3.1-22b5bf?style=for-the-badge)](https://recharts.org/)
+[![Linter](https://img.shields.io/badge/Oxlint-Passing-success?style=for-the-badge)](https://oxc.rs/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
----
+**Network Compass** is a high-performance, full-stack cellular radio frequency (RF) telemetry monitoring, propagation intelligence, and link benchmarking dashboard. Built for an **Electronics and Communication Engineering (ECE)** demonstration, it models physical and link-layer cellular behavior across **4G LTE** and **5G NR** spectrums with mathematical fidelity, real-time analytics, and resilient offline simulation.
 
-## 🚀 Key Features
-
-The prototype features a responsive dashboard with 10 connected modules:
-
-1. **Dashboard (Executive Cockpit)**: Real-time link status, radio access technology (RAT), 5-bar cellular signal meter, network quality index, throughput metrics, recent measurements log, and quick-action navigation cards.
-2. **Network Overview**: Deep-dive physical link telemetry including RSRP, RSRQ, SINR, packet delay variation (jitter), and frame drop rate.
-3. **Cellular RF Network Scanner**: Simulated RF spectrum sweep with interactive stage progress indicators across Sub-6 GHz (e.g. Band n78) and LTE bands. Displays serving and neighbor cell towers with PCI, TAC, PLMN, and signal strength.
-4. **Signal Monitoring**: Real-time signal strength gauge (in dBm), 5-bar visualization, 3GPP cellular classification standards reference table, and RF link budget parameters.
-5. **4G / 5G Radio Mode Selector**: Dynamic profile switching engine between **5G mmWave (FR2)**, **5G Sub-6 GHz (FR1)**, **4G LTE-Advanced (Carrier Aggregation)**, and **4G LTE Standard**, immediately updating all dashboard measurements.
-6. **Speed & Latency Benchmark**: Interactive throughput benchmark test bench featuring an animated speedometer gauge dial, multi-phase testing (Ping -> Downlink -> Uplink -> Report), and session history.
-7. **Geographic Coverage Heat Map**: Interactive OpenStreetMap / Leaflet geographic view displaying RF propagation density bubbles, transmitter towers, customizable layer toggles (Density & Nodes, Heatmap, Nodes), and clickable tower inspector popups.
-8. **Network History & Analytics**: Time-series telemetry trend charts (powered by Recharts) showing longitudinal signal levels, throughput fluctuations, and transmission latency over rolling time windows.
-9. **Offline Mode & Local Storage Cache**: Disconnected operation simulation modeling subterranean tunnels or remote dead-zones. Preserves and displays cached telemetry snapshots from `localStorage` with visual offline badges.
-10. **Settings & Diagnostic Center**: Configurable telemetry auto-polling rates (Manual, 3s, 5s, 10s), cache purging, live backend health check ping, and telemetry timeout diagnostics.
+> [!NOTE]
+> **Academic Simulation Notice**: All RF telemetry data (RSRP, RSRQ, SINR, CQI, throughput, and carrier transponders) are mathematically modeled for Electronics & Communication Engineering (ECE) demonstration purposes. They model real-world 3GPP propagation without requiring physical cellular modems or software-defined radios (SDR).
 
 ---
 
-## 🛠️ Technology Stack
+## 📸 Executive Dashboard Preview
 
-- **Frontend**:
-  - React 19 (`react`, `react-dom`)
-  - Vite 8 (Modern build tool & dev server with reverse proxy)
-  - Recharts 3 (Time-series data visualization)
-  - Leaflet 1.9 (Interactive RF geographic mapping)
-  - Custom CSS3 design system with cyber-engineering dark aesthetic
-  - Oxlint (Ultra-fast code linter with 0 warnings)
-- **Backend**:
-  - Node.js (ES Modules)
-  - Express.js 4 (Modular REST API)
-  - CORS middleware
-  - Dotenv configuration
-- **Data & Simulation**:
-  - Correlated RF mathematical simulation modeling path loss, throughput, and latency
-  - In-memory rolling history buffer & browser `localStorage` caching
+<!-- Replace "screenshots/dashboard_overview.png" with your custom screenshot path if desired -->
+![Network Compass Executive Dashboard](screenshots/dashboard_overview.png)
+
+> **Live Telemetry Cockpit**: Real-time link status, 5-bar cellular meter, signal power (dBm), downlink throughput (Mbps), round-trip latency, jitter, frame drop rate, and direct navigation to specialized RF engineering modules.
 
 ---
 
-## 📁 Repository Structure
+## 🌐 Live Demo & Instant Access
+
+> ⏳ **Live Demo Deployment Status: Pending Deployment**
+>
+> *Once you deploy this project to Vercel or Netlify using the simple 2-minute guide below, replace this line with your verified public link:*
+>
+> `[🚀 Launch Live Network Compass Dashboard](https://your-app-name.vercel.app)`
+
+### Ways to Experience the Dashboard
+
+1. **Local 1-Click Launch (Windows)**: Run [RUN_NETCOMPASS.bat](#-quick-start-1-click-windows-launcher) to start both backend & frontend and open your browser automatically.
+2. **Instant Cloud Access (Web Visitors)**: Deploy the static frontend to Vercel or Netlify in 2 minutes. The application includes a self-contained simulation engine ([src/services/mockFallback.js](file:///c:/Users/STAR/Documents/Netcompass-AG/src/services/mockFallback.js)) so web visitors can use all 10 views without installing any software or running a backend server.
+
+---
+
+## 🔍 Visual Module Gallery
+
+Explore the verified views captured directly from the live running application:
+
+| **Cellular RF Network Scanner** | **Speed & Latency Benchmark** |
+| :---: | :---: |
+| ![Network Scanner](screenshots/network_scanner.png) | ![Speed Test Benchmark](screenshots/speed_test.png) |
+| *Discovers serving & neighbor cell towers across Sub-6 GHz and LTE bands with PCI, TAC, and PLMN.* | *Real-time animated gauge speedometer bench measuring downlink, uplink, latency, and jitter.* |
+
+| **Geographic Coverage Heat Map** | **RF Signal Strength & Link Budget** |
+| :---: | :---: |
+| ![Coverage Heat Map](screenshots/coverage_map.png) | ![Signal Strength Monitor](screenshots/signal_monitor.png) |
+| *Leaflet-powered RF propagation density bubbles, sector transmitters, and customizable layer filters.* | *3GPP cellular classification standard reference table, 256-QAM indicator, RSRP, RSRQ, and SINR.* |
+
+| **Historical Telemetry Trends & Analytics** |
+| :---: |
+| ![Historical Telemetry Trends](screenshots/history_analytics.png) |
+| *Rolling multi-parameter time-series analytics (powered by Recharts) tracking signal, throughput, and latency stability.* |
+
+---
+
+## 🚀 Key Features (Verified in Codebase)
+
+The system features **10 fully connected views** accessible via the top navigation bar or direct URL hash routing:
+
+1. **Executive Dashboard (`#dashboard`)**: Live RF connection status, radio access technology (RAT) indicator, 5-bar cellular meter, link performance metrics (Download, Upload, Ping, Jitter, Packet Loss, SINR), and quick-action module hubs.
+2. **Network Overview (`#overview`)**: Deep-dive physical link telemetry including RSRP, RSRQ, SINR, packet delay variation (jitter), and frame drop rate.
+3. **Cellular RF Network Scanner (`#scanner`)**: Simulated RF spectrum sweep discovering carrier transponders (Jio True 5G, Airtel 5G Plus, Vi GIGAnet, BSNL 4G) with PCI, TAC, PLMN, ARFCN, and channel bandwidth.
+4. **Signal Monitoring & Link Budget (`#signal`)**: Real-time signal strength gauge (in dBm), 5-bar visualizer, 3GPP cellular classification standards reference table, and modulation order indicators (up to 256-QAM).
+5. **4G / 5G Radio Mode Selector (`#mode`)**: Dynamic profile switching engine between **5G mmWave (FR2)**, **5G Sub-6 GHz (FR1)**, **4G LTE-Advanced (Carrier Aggregation)**, and **4G LTE Standard**, immediately updating all dashboard telemetry.
+6. **Speed & Latency Benchmark (`#speedtest`)**: Interactive throughput benchmark featuring an animated circular gauge speedometer, multi-phase testing (Ping &rarr; Downlink &rarr; Uplink &rarr; Diagnostics), and test session history.
+7. **Geographic Coverage Heat Map (`#heatmap`)**: Interactive OpenStreetMap / Leaflet geographic view displaying RF propagation density nodes, sector towers, customizable layer filters (Density & Nodes, Heatmap, Nodes), and clickable tower inspector popups.
+8. **Network History & Analytics (`#history`)**: Longitudinal trend charts (powered by Recharts) showing rolling time windows of signal levels, throughput fluctuations, and transmission latency.
+9. **Offline Mode & Resilient Cache (`#offline`)**: Disconnected operation simulation modeling subterranean tunnels or remote dead-zones. Seamlessly falls back to `localStorage` caching with clear status badges.
+10. **Settings & Diagnostic Center (`#settings`)**: Configurable telemetry polling intervals (Manual, 3s, 5s, 10s), cache purging, and live backend health check verification.
+
+---
+
+## 🏗️ System Architecture
 
 ```text
-Netcompass-AG/
-├── backend/
-│   ├── src/
-│   │   ├── config/               # Environment & port configuration
-│   │   ├── controllers/          # Request handlers
-│   │   │   ├── coverageController.js
-│   │   │   ├── healthController.js
-│   │   │   ├── scannerController.js
-│   │   │   ├── speedtestController.js
-│   │   │   └── telemetryController.js
-│   │   ├── middleware/           # 404 & error handling
-│   │   │   └── errorHandler.js
-│   │   ├── routes/               # API route definitions
-│   │   │   ├── coverageRoutes.js
-│   │   │   ├── healthRoutes.js
-│   │   │   ├── index.js
-│   │   │   ├── scannerRoutes.js
-│   │   │   ├── speedtestRoutes.js
-│   │   │   └── telemetryRoutes.js
-│   │   ├── services/             # Business & simulation logic
-│   │   │   ├── coverageService.js
-│   │   │   ├── healthService.js
-│   │   │   ├── scannerService.js
-│   │   │   ├── speedtestService.js
-│   │   │   ├── telemetryHistoryService.js
-│   │   │   └── telemetryService.js
-│   │   └── server.js             # Express application entry point
-│   ├── .env                      # Backend environment variables
-│   └── package.json              # Backend dependencies
-├── public/                       # Static public assets (icons, SVG)
-├── src/
-│   ├── assets/                   # Static images & graphics
-│   ├── components/               # React UI components
-│   │   ├── dashboard/            # Dashboard widgets
-│   │   │   ├── ConnectionStatus.jsx
-│   │   │   ├── MetricCard.jsx
-│   │   │   ├── NetworkOverview.jsx
-│   │   │   ├── NetworkType.jsx
-│   │   │   └── SignalStrength.jsx
-│   │   ├── CoverageMap.jsx       # Leaflet RF Heat Map
-│   │   ├── MainDashboardView.jsx # Executive Dashboard & Module Hub
-│   │   ├── Navbar.jsx            # Responsive navigation bar
-│   │   ├── NetworkModeSelector.jsx # 4G/5G profile switcher
-│   │   ├── NetworkScanner.jsx    # RF spectrum scanner
-│   │   ├── OfflineModeView.jsx   # Offline cache simulation
-│   │   ├── SettingsAboutView.jsx # Settings & diagnostic reports
-│   │   ├── SignalMonitor.jsx     # RSRP/RSRQ/SINR monitoring
-│   │   ├── SpeedTestView.jsx     # Speedometer benchmark bench
-│   │   └── TelemetryHistory.jsx  # Recharts time-series charts
-│   ├── services/                 # API client & offline fallback
-│   │   ├── api.js                # Centralized fetch service with timeout & retry
-│   │   └── mockFallback.js       # Offline resilient mock provider
-│   ├── App.css                   # Global component & layout styling
-│   ├── App.jsx                   # Application root & tab routing
-│   ├── index.css                 # Global CSS variables & resets
-│   └── main.jsx                  # React DOM entry point
-├── package.json                  # Root npm configuration & scripts
-├── vite.config.js                # Vite config with /api reverse proxy
-└── README.md                     # Documentation
+┌────────────────────────────────────────────────────────────────────────┐
+│                        CLIENT LAYER (Browser)                         │
+│                                                                        │
+│   React 19 Dashboard ──► Leaflet Map ──► Recharts Analytics           │
+│         │                                                              │
+│         ▼                                                              │
+│   src/services/api.js ──[Automatic Fallback]──► src/services/mockFallback.js
+└─────────┬──────────────────────────────────────────────────────────────┘
+          │ (Vite Proxy: /api  OR  Direct: http://localhost:5000/api)
+          ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        BACKEND REST API SERVER                         │
+│                     (Node.js + Express.js :5000)                       │
+│                                                                        │
+│   ├── /api/health              (Health check & uptime diagnostics)     │
+│   ├── /api/telemetry/current   (Real-time RF link parameters)          │
+│   ├── /api/telemetry/history   (Rolling time-series telemetry buffer)  │
+│   ├── /api/telemetry/profiles  (4G/5G radio simulation profiles)       │
+│   ├── /api/scanner/scan        (RF spectrum transponder sweep)         │
+│   ├── /api/speedtest/run       (Throughput & latency benchmark bench)  │
+│   └── /api/coverage/points     (Geographic RF propagation nodes)       │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ⚡ Installation & Quick Start
+## ⚡ Quick Start: 1-Click Windows Launcher
+
+For Windows users, the repository includes a self-healing, automated batch launcher: **`RUN_NETCOMPASS.bat`**.
+
+### How to Run
+
+1. Clone or download the repository to your PC:
+
+   ```bash
+   git clone https://github.com/syeedhussain-sh/Netcompass-AG.git
+   cd Netcompass-AG
+   ```
+
+2. Double-click **`RUN_NETCOMPASS.bat`** (or execute `.\RUN_NETCOMPASS.bat` in Command Prompt / PowerShell).
+
+### What RUN_NETCOMPASS.bat Automates
+
+- **Environment Verification**: Confirms `node` (v18+) and `npm` are installed and available in PATH.
+- **Auto-Installation**: Automatically runs `npm install` for both root and backend if `node_modules` are missing.
+- **Backend Startup**: Launches the Express REST API in a dedicated server window on port 5000.
+- **Live Health Check**: Pings `http://localhost:5000/api/health` with up to 10 automated retry attempts.
+- **Frontend Startup**: Starts the Vite development server on port 5173.
+- **Browser Automation**: Automatically launches your default web browser directly to `http://localhost:5173`.
+- **Interactive Console Menu**:
+  - `[H]` Query live backend health check endpoint
+  - `[O]` Re-open dashboard in browser
+  - `[S]` Open backend REST API in browser
+  - `[Q]` Cleanly exit launcher controller
+
+---
+
+## 🛠️ Manual Installation (Cross-Platform: Windows, macOS, Linux)
+
+If you prefer starting services manually from the terminal:
 
 ### 1. Prerequisites
+
 - **Node.js**: v18.0.0 or higher
 - **npm**: v9.0.0 or higher
 
 ### 2. Install Dependencies
 
-Install root (frontend) dependencies:
 ```bash
+# Install frontend dependencies
 npm install
-```
 
-Install backend dependencies:
-```bash
+# Install backend dependencies
 cd backend
 npm install
 cd ..
 ```
 
----
+### 3. Run Application
 
-## 🏃 Running the Prototype
+Open two terminal windows:
 
-### Option A: Run Backend and Frontend Concurrently (Recommended)
+**Terminal 1 (Backend API on Port 5000):**
 
-In terminal 1 (start the Backend API on port 5000):
 ```bash
 npm run server
 ```
 
-In terminal 2 (start the Vite dev server on port 5173):
+**Terminal 2 (Frontend Dashboard on Port 5173):**
+
 ```bash
 npm run dev
 ```
 
-### Option B: Local URLs
+### 4. Open in Browser
+
 - **Frontend Dashboard**: [http://localhost:5173](http://localhost:5173)
-- **Backend API Server**: [http://localhost:5000](http://localhost:5000)
-- **Backend Health Check**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+- **Direct View Links**:
+  - Main Dashboard: [http://localhost:5173/#dashboard](http://localhost:5173/#dashboard)
+  - Network Scanner: [http://localhost:5173/#scanner](http://localhost:5173/#scanner)
+  - Speed Test: [http://localhost:5173/#speedtest](http://localhost:5173/#speedtest)
+  - Coverage Map: [http://localhost:5173/#heatmap](http://localhost:5173/#heatmap)
+  - Signal Monitor: [http://localhost:5173/#signal](http://localhost:5173/#signal)
+  - History & Trends: [http://localhost:5173/#history](http://localhost:5173/#history)
+- **Backend REST API**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
 
 ---
 
-## 🔌 API Endpoints Reference
+## 🌐 How Visitors Can View & Deploy Live
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/health` | Backend server health check & uptime |
-| `GET` | `/api/telemetry/current` | Active RF link snapshot with RSRP, throughput, & quality |
-| `GET` | `/api/telemetry/history` | Rolling chronological telemetry records (`?limit=60`) |
-| `GET` | `/api/telemetry/profiles` | List of available 4G/5G simulation profiles |
-| `POST` | `/api/telemetry/profile` | Switch active profile (`{ profileId: "5g-mmwave" }`) |
-| `POST` | `/api/scanner/scan` | Trigger RF spectrum sweep & discover cell towers |
-| `GET` | `/api/scanner/history` | Retrieve past RF scan session logs |
-| `POST` | `/api/speedtest/run` | Execute simulated throughput & ping benchmark |
-| `GET` | `/api/speedtest/history` | Retrieve speed test benchmark run history |
-| `GET` | `/api/coverage/points` | Geographic coverage nodes and propagation sectors |
+> **Important Note**: GitHub is a code repository and does not execute Windows batch files (`.bat`) or host dynamic Node.js servers natively. To allow visitors to open the live dashboard via a web link without downloading anything, deploy using one of the following methods:
 
----
+### Option 1 - Instant Static Frontend Deployment (Vercel / Netlify / GitHub Pages)
 
-## 🔍 Telemetry Timeout Diagnosis & Resolution
+Because Network Compass contains a **built-in Resilient Offline Demo Provider** (`src/services/mockFallback.js`), the frontend can be deployed completely standalone! If the backend API is unreachable, the dashboard automatically generates simulated live telemetry, speed tests, and scanner results.
 
-### Exact Root Cause:
-1. **Application-Level Cause**:
-   - The frontend API service originally attempted to query `http://localhost:5000/api/telemetry/current` with an abort timeout of 6 seconds.
-   - During initial runs, only the Vite frontend dev server (`npm run dev` on port 5173) was started; the backend server process on port 5000 was inactive.
-   - Consequently, requests failed to connect or timed out, triggering:
-     `"Telemetry request timed out. Please check monitoring connection."`
-2. **Resolution Implemented**:
-   - Configured a Vite reverse proxy (`/api` &rarr; `http://localhost:5000`) in `vite.config.js`.
-   - Added npm scripts (`npm run server` and `npm run dev:server`) in root `package.json`.
-   - Built resilient timeout handling and automatic fallback to `src/services/mockFallback.js`. If the backend is ever stopped, the UI transitions gracefully into **Offline Demo Mode** without halting or crashing.
+1. **Deploy to Vercel**:
+   - Push repository to GitHub.
+   - Import the repository on [Vercel](https://vercel.com).
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Deploy! Visitors can immediately interact with the full dashboard.
 
-### Antigravity IDE Telemetry (Separate from App):
-- Antigravity IDE is built on a VS Code-derived runtime. If your workstation or firewall blocks corporate telemetry endpoints, the IDE logs a background telemetry timeout.
-- **IDE Setting Menu Path**: `File > Preferences > Settings > Application > Telemetry > Telemetry Level` (can be set to `off` or `error`).
-- **Important**: Network Compass is 100% independent of IDE telemetry and functions completely without it.
+### Option 2 - Full-Stack Cloud Deployment (Frontend + Live Backend API)
+
+For a connected full-stack deployment with live REST endpoints:
+
+1. **Deploy Backend**:
+   - Deploy the `backend/` folder to **Render**, **Railway**, or **Fly.io**.
+   - Build Command: `npm install`
+   - Start Command: `node src/server.js`
+   - Note the assigned backend URL (e.g. `https://netcompass-api.onrender.com`).
+
+2. **Deploy Frontend**:
+   - Deploy root repository to **Vercel** or **Netlify**.
+   - Set environment variable: `VITE_API_URL=https://netcompass-api.onrender.com/api`
+   - Deploy!
 
 ---
 
-## ⚠️ Demo Data & Limitations
+## 🔌 REST API Specification
 
-1. **Simulated Telemetry**: Measurements (RSRP dBm, RSRQ dB, SINR, CQI, Mbps, ping ms) are mathematically generated using wireless communications models (path loss exponent and standard 3GPP thresholds). They do not represent real physical cell tower transmissions.
-2. **Hardware Boundaries**: Web browsers cannot directly access low-level smartphone baseband radios or PCIe cellular modems without specialized kernel drivers (e.g. QXDM or SDR). The app's controls model network layer behaviors for ECE academic presentation.
-3. **Speed Test Benchmark**: Throughput tests are link simulations calibrated to the selected radio profile; they do not consume real WAN bandwidth or test external ISP gateways.
+| Method | Route | Description | Sample Output |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/health` | Health check & uptime | `{"success":true,"uptime":42.5}` |
+| `GET` | `/api/telemetry/current` | Active RF link snapshot | `{"connectionStatus":"Connected","signalStrength":-76}` |
+| `GET` | `/api/telemetry/history` | Rolling telemetry records (`?limit=60`) | `{"success":true,"data":[...]}` |
+| `GET` | `/api/telemetry/profiles` | Available 4G/5G profiles | `[{"id":"5g-sub6","name":"5G Sub-6 GHz"}]` |
+| `POST` | `/api/telemetry/profile` | Switch radio profile | `{"activeProfileId":"5g-mmwave"}` |
+| `POST` | `/api/scanner/scan` | Trigger RF spectrum sweep | `{"discoveredTowers":[...]}` |
+| `GET` | `/api/scanner/history` | Past RF scan session logs | `{"success":true,"data":[...]}` |
+| `POST` | `/api/speedtest/run` | Execute benchmark test | `{"downloadSpeed":261.8,"latency":24}` |
+| `GET` | `/api/speedtest/history` | Speed test history logs | `{"success":true,"data":[...]}` |
+| `GET` | `/api/coverage/points` | Geographic RF nodes & sectors | `{"center":{...},"points":[...]}` |
 
 ---
 
-## 👥 Hackathon Team & Project Info
+## 🛠️ Troubleshooting
+
+- **Port 5000 or 5173 is already in use**:
+
+  Check running processes or terminate existing instances:
+
+  ```powershell
+  Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force
+  ```
+
+- **Backend API status shows "Offline Demo Cache"**:
+
+  - Ensure the backend server is running with `npm run server` or through `RUN_NETCOMPASS.bat`.
+  - Check health directly: `curl http://localhost:5000/api/health`.
+
+- **Map tiles not displaying**:
+
+  - The coverage heat map requires an active internet connection to download OpenStreetMap tile layers.
+
+---
+
+## 👥 Project & Academic Information
 
 - **Project**: Network Compass
-- **Category**: Telecommunications / Wireless RF Engineering
+- **Domain**: Telecommunications / Cellular Radio Frequency (RF) Engineering
 - **Department**: Electronics and Communication Engineering (ECE)
+- **Technologies**: React 19, Vite 8, Node.js, Express.js, Leaflet, Recharts, Oxlint
