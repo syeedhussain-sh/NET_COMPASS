@@ -29,7 +29,7 @@
 
 ## 🌐 Live Demo & Instant Access
 
-> ⏳ **Live Demo Deployment Status: netcompass-fpvozfsbv-syeedhussain-sh.vercel.app**
+> ⏳ **Live Demo Deployment Status: netcompass-fpvozfsbv-syeedhussain-sh.vercel.app **
 >
 > *Once you deploy this project to Vercel or Netlify using the simple 2-minute guide below, replace this line with your verified public link:*
 >
